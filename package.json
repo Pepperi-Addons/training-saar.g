@@ -17,6 +17,10 @@
 	"license": "ISC",
 	"dependencies": {
 		"@pepperi-addons/papi-sdk": "^1.27.4",
-		"@pepperi-addons/scripts": "^2.0.4"
+		"@pepperi-addons/scripts": "^2.0.4",
+		"uuid": "^8.3.2"
+	},
+	"devDependencies": {
+		"@types/uuid": "^8.3.1"
 	}
 }
