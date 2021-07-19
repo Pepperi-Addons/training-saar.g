@@ -26,37 +26,52 @@ class TodosService {
     }
 
     upsertTodo(body: any) {
-        if(!Object.keys(body).every(v => VALID_FIELDS.includes(v))){
-            throw new Error(`Unsupported field found. Supported fields are: ${VALID_FIELDS}`);
-        //TODO Deal with an array of todos
-        } 
-
-        if(body.DueDate === ""){
-            body.DueDate = null;
+        //Handling a single todo as an array of size 1 will allow for a general processing.
+        if(!Array.isArray(body)){
+            body = [body];
         }
+        //Validate that each element is valid
+        body.forEach(doc => {
+            if(!Object.keys(doc).every(v => VALID_FIELDS.includes(v))){
+                throw new Error(`Unsupported field found. Supported fields are: ${VALID_FIELDS}`);
+            }
+        });
 
-        if(!body.Key){
-            return this.insertTodo(body);
-        } 
-        else {
-            return this.updateTodo(body);
-        }
+        let promises: Array<Promise<any>> = new Array;
+        body.forEach(doc => {
+            if(doc.DueDate === ""){
+                doc.DueDate = null;
+            }
+    
+            if(!doc.Key){
+                promises.push(this.insertTodo(doc));
+            } 
+            else {
+                promises.push(this.updateTodo(doc));
+            }
+        });
+
+        return Promise.all(promises)
+        .then(() => {return promises[0]})
+        .catch(rej => {
+            return rej;
+        });
     }
 
-    async updateTodo(body: any) {
-        const doesKeyExist: boolean = (await this.papiClient.addons.data.uuid(this.addonUUID).table(TABLE_NAME).find(body.Key)).length > 0;
+    async updateTodo(doc: any) {
+        const doesKeyExist: boolean = (await this.papiClient.addons.data.uuid(this.addonUUID).table(TABLE_NAME).find(doc.Key)).length > 0;
 
         if(doesKeyExist){
-            return this.papiClient.addons.data.uuid(this.addonUUID).table(TABLE_NAME).upsert(body);
+            return this.papiClient.addons.data.uuid(this.addonUUID).table(TABLE_NAME).upsert(doc);
         }
         else{
-            throw new Error(`Could not find item with key ${body.Key}`);
+            throw new Error(`Could not find item with key ${doc.Key}`);
         }
     }
 
-    insertTodo(body: any) {
-        body.Key = uuid();
-        return this.papiClient.addons.data.uuid(this.addonUUID).table(TABLE_NAME).upsert(body);
+    insertTodo(doc: any) {
+        doc.Key = uuid();
+        return this.papiClient.addons.data.uuid(this.addonUUID).table(TABLE_NAME).upsert(doc);
     }
 }
 
