@@ -6,6 +6,7 @@ import { PepDialogData, PepDialogService } from '@pepperi-addons/ngx-lib/dialog'
 import { GenericListDataSource } from '../generic-list/generic-list.component';
 import { TodoForm } from '../form/todo-form.component';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TodosService } from '../../services/todos.service';
 
 
 @Component({
@@ -23,7 +24,8 @@ export class AddonComponent implements OnInit {
         public layoutService: PepLayoutService,
         public translate: TranslateService,
         public router: Router,
-        public route: ActivatedRoute
+        public route: ActivatedRoute,
+        public todoservice: TodosService
     ) {
 
         this.layoutService.onResize$.subscribe(size => {
@@ -36,19 +38,16 @@ export class AddonComponent implements OnInit {
     }
 
     listDataSource: GenericListDataSource = {
+        addItem: async () => {
+            debugger;
+            return this.router.navigate(['./addTodo'], {
+                relativeTo: this.route,
+                queryParamsHandling: 'preserve'
+            })
+        },
+
         getList: async (state) => {
-            return [
-                {
-                    Key: 'key1',
-                    Field1: 'Hello',
-                    Field2: true
-                },
-                {
-                    Key: 'key1',
-                    Field1: 'World',
-                    Field2: false
-                }
-            ]
+            return this.todoservice.getTodos();
         },
 
         getDataView: async () => {
@@ -62,21 +61,41 @@ export class AddonComponent implements OnInit {
                   Title: '',
                   Fields: [
                     {
-                        FieldID: 'Field1',
+                        FieldID: 'Name',
                         Type: 'TextBox',
-                        Title: 'Field1',
+                        Title: this.translate.instant('Name'),
                         Mandatory: false,
                         ReadOnly: true
                     },
                     {
-                        FieldID: 'Field2',
+                        FieldID: 'Description',
+                        Type: 'TextBox',
+                        Title: this.translate.instant('Description'),
+                        Mandatory: false,
+                        ReadOnly: true
+                    },
+                    {
+                        FieldID: 'DueDate',
+                        Type: 'DateAndTime',
+                        Title: this.translate.instant('Due Date'),
+                        Mandatory: false,
+                        ReadOnly: true
+                    },
+                    {
+                        FieldID: 'Completed',
                         Type: 'Boolean',
-                        Title: 'Field2',
+                        Title: this.translate.instant('Completed'),
                         Mandatory: false,
                         ReadOnly: true
                     }
                   ],
                   Columns: [
+                    {
+                      Width: 25
+                    },
+                    {
+                      Width: 25
+                    },
                     {
                       Width: 25
                     },
@@ -90,17 +109,39 @@ export class AddonComponent implements OnInit {
         },
 
         getActions: async (objs) =>  {
-            return objs.length ? [
-                {
+            let validActions = [];
+            // debugger;
+
+            if(objs.length === 1){
+                validActions.push({
                     title: this.translate.instant("Edit"),
+                        handler: async (objs) => {
+                            this.router.navigate([objs[0].Key], {
+                                relativeTo: this.route,
+                                queryParamsHandling: 'merge'
+                            });
+                        }
+                });
+            }
+        
+            if (objs.length >= 1){
+                validActions.push({
+                    title: this.translate.instant("Delete"),
                     handler: async (objs) => {
-                        this.router.navigate([objs[0].Key], {
-                            relativeTo: this.route,
-                            queryParamsHandling: 'merge'
-                        });
+                        //TODO implement
                     }
-                }
-            ] : []
+                });
+
+                validActions.push({
+                    title: this.translate.instant("Complete"),
+                    handler: async (objs) => {
+                        //TODO implement
+                    }
+                });
+            }
+            
+           return validActions;
         }
+        
     }
 }

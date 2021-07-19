@@ -5,19 +5,23 @@
         </div>
         <div  header-end-content>
             <pep-button [value]="'Cancel' | translate" (buttonClick)="cancelClicked()"></pep-button>
-            <pep-button [value]="'Save' | translate" [styleType]="'strong'" (buttonClick)="saveClicked()"></pep-button>
+            <pep-button [value]="'Save' | translate" [styleType]="'strong'" (buttonClick)="saveClicked()" [disabled] = "disableSaveButton"></pep-button>
         </div>
     </pep-top-bar>
     <h5>{{ 'Define the todo details' | translate}}</h5>
     <br/>
     <div *ngIf="!loading" class="form">
         <div class="grid-container">
-            <div class="key">
-                <pep-textbox [(value)]="key" [disabled]="true" [readonly]="true"></pep-textbox>
+            <div class="name">
+                <pep-textbox [mandatory]="true" [(value)]="obj.Name" (valueChange)="onValueChanged($event)"></pep-textbox>
             </div>
 
-            <div class="field1">
-                <pep-textbox [(value)]="field1" [disabled]="false" [readonly]="false"></pep-textbox>
+            <div class="desc">
+                <pep-textbox [mandatory]="true" [(value)]="obj.Description" (valueChange)="onValueChanged($event)"></pep-textbox>
+            </div>
+
+            <div class="duedate">
+                <pep-date [(value)]="obj.DueDate" [type]="'datetime'"></pep-date>
             </div>
         </div>          
     </div>

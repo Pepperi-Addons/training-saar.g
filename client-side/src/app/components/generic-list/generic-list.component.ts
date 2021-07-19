@@ -46,6 +46,7 @@ export interface GenericListDataSource {
         title: string;
         handler: (obj: any) => Promise<void>;
     }[]>;
+    addItem(): Promise<any>;
 }
 
 @Component({
@@ -126,7 +127,9 @@ export class GenericListComponent implements OnInit, AfterViewInit {
   getMenuObjects() {
     let uuids = this.customList.getSelectedItemsData().rows ?? [];
     if (this.customList.getIsAllSelectedForActions()) {
+      // debugger;
       uuids = this.dataObjects.map(obj => obj.UID).filter(x => uuids.indexOf(x) === -1);
+      // console.log(uuids);
     }
     const objects = uuids.map(uuid => this.getObject(uuid))
     return objects;

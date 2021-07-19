@@ -22,6 +22,7 @@ import { PepSearchModule } from '@pepperi-addons/ngx-lib/search';
 import { TodoForm } from './components/form/todo-form.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { PepTextboxModule } from '@pepperi-addons/ngx-lib/textbox';
+import { PepDateModule } from '@pepperi-addons/ngx-lib/date';
 
 export function createTranslateLoader(http: HttpClient, fileService: PepFileService, addonService: PepAddonService) {
     const translationsPath: string = fileService.getAssetsTranslationsPath();
@@ -68,6 +69,7 @@ export function createTranslateLoader(http: HttpClient, fileService: PepFileServ
         PepDialogModule,
         PepListModule,
         PepSearchModule,
+        PepDateModule,
         PepTextboxModule,
         MatDialogModule,
         TranslateModule.forRoot({

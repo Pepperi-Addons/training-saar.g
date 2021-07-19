@@ -1,10 +1,11 @@
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Component, OnInit } from "@angular/core";
-import { PepLayoutService, PepScreenSizeType } from '@pepperi-addons/ngx-lib';
+import { IPepFieldValueChangeEvent, PepLayoutService, PepScreenSizeType } from '@pepperi-addons/ngx-lib';
 import { AddonService } from '../../services/addon.service';
 import { PepDialogData, PepDialogService } from '@pepperi-addons/ngx-lib/dialog';
 import { GenericListDataSource } from '../generic-list/generic-list.component';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TodosService } from 'src/app/services/todos.service';
 
 
 @Component({
@@ -22,7 +23,8 @@ export class TodoForm implements OnInit {
         public translate: TranslateService,
         public dialogService: PepDialogService,
         public router: Router,
-        public activatedRoute: ActivatedRoute
+        public activatedRoute: ActivatedRoute,
+        private todosService: TodosService
     ) {
 
         this.layoutService.onResize$.subscribe(size => {
@@ -30,16 +32,30 @@ export class TodoForm implements OnInit {
         });
 
         this.key = this.activatedRoute.snapshot.params["todo_uuid"];
-        this.loading = false;
-
-
+        this.loading = true;
+        
+        if(this.key === 'addTodo'){
+            this.loading = false;
+        }
+        else{
+            todosService.getTodo(this.key).then(obj => {
+                this.obj = obj[0];
+                this.loading = false;
+            });
+        }
     }
 
     mode: 'Edit' | 'Add'
     title: string = "Hello"
-    field1: string = "Hello"
     loading: boolean = true
     key: string;
+    disableSaveButton: boolean = true;
+
+    obj = {
+        Name: '',
+        Description: '',
+        DueDate: ''
+    };
 
     ngOnInit(){
     }
@@ -56,9 +72,18 @@ export class TodoForm implements OnInit {
     }
 
     saveClicked() {
-        this.dialogService.openDefaultDialog(new PepDialogData({
-            title: 'Saved'
-        }))
+        this.todosService.upsertTodos(filterObj(this.obj))
+        .then(res => {
+            this.dialogService.openDefaultDialog(new PepDialogData({
+                title: 'Saved'
+            }));
+        })
+        .catch(err =>{
+            this.dialogService.openDefaultDialog(new PepDialogData({
+                title: 'Error saving',
+                content: err
+            }));
+        });       
     }
 
     cancelClicked() {
@@ -82,4 +107,34 @@ export class TodoForm implements OnInit {
             ]
         }))
     }
+
+    onValueChanged(event: IPepFieldValueChangeEvent) {
+        this.disableSaveButton = (this.obj.Name === "" || this.obj.Description === "");
+    }
 }
+
+
+
+function filterObj(obj): [any] {
+
+    // debugger;  
+    // const allowed = ['Name', 'Description', 'DueDate', 'Completed'];
+      
+    //   const filtered = Object.keys(obj)
+    //     .filter(key => allowed.includes(key))
+    //     .reduce((obj, key) => {
+    //       obj[key] = obj[key];
+    //       return obj;
+    //     }, {});
+
+    //     debugger;
+    const filtered = {
+        Name: obj.Name,
+        Description: obj.Description,
+        DueDate: obj.DueDate,
+        Completed: obj.Completed
+    }
+
+        return [filtered];
+}
+
