@@ -3,7 +3,7 @@ import { Client } from '@pepperi-addons/debug-server';
 import { v4 as uuid } from 'uuid';
 
 const TABLE_NAME = "Todos";
-const VALID_FIELDS = ["Name", "Description", "DueDate", "Completed"]
+const VALID_FIELDS = ["Name", "Description", "DueDate", "Completed", "Key"];
 
 class TodosService {
     private papiClient: PapiClient;
@@ -26,12 +26,16 @@ class TodosService {
     }
 
     upsertTodo(body: any) {
-        //TODO validate behavior with invalid fields
         if(!Object.keys(body).every(v => VALID_FIELDS.includes(v))){
             throw new Error(`Unsupported field found. Supported fields are: ${VALID_FIELDS}`);
         //TODO Deal with an array of todos
         } 
-        else if(!body.Key){
+
+        if(body.DueDate === ""){
+            body.DueDate = null;
+        }
+
+        if(!body.Key){
             return this.insertTodo(body);
         } 
         else {

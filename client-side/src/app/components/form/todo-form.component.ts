@@ -128,13 +128,17 @@ function filterObj(obj): [any] {
     //     }, {});
 
     //     debugger;
-    const filtered = {
+    let filtered = {
         Name: obj.Name,
         Description: obj.Description,
         DueDate: obj.DueDate,
         Completed: obj.Completed
     }
 
-        return [filtered];
+    if (obj.Key){
+        filtered["Key"] = obj.Key;
+    }
+
+    return [filtered];
 }
 
