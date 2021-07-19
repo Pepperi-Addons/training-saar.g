@@ -3,7 +3,7 @@ import { Client } from '@pepperi-addons/debug-server';
 import { v4 as uuid } from 'uuid';
 
 const TABLE_NAME = "Todos";
-const VALID_FIELDS = ["Name", "Description", "DueDate", "Completed", "Key"];
+const VALID_FIELDS = ["Name", "Description", "DueDate", "Completed", "Key", "Hidden"];
 
 class TodosService {
     private papiClient: PapiClient;
