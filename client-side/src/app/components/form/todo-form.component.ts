@@ -118,8 +118,6 @@ export class TodoForm implements OnInit {
     }
 }
 
-
-
 function filterObj(obj): [any] {
     let filtered = {
         Name: obj.Name,
@@ -137,4 +135,3 @@ function filterObj(obj): [any] {
     }
     return [filtered];
 }
-

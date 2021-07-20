@@ -121,10 +121,8 @@ export class AddonComponent implements OnInit {
                 validActions.push({
                     title: this.translate.instant("Delete"),
                     handler: async (objs) => {
-                        objs.forEach(todo => {
-                            todo.Hidden = true;
-                        });
-                        this.todoservice.upsertTodos(filterObjFields(objs))
+                        objs = objs.map(obj => ({Key: obj.Key, Hidden: true}));
+                        this.todoservice.upsertTodos(objs)
                         .finally(() => {
                             this.genericListComponent.reload();
                         })
@@ -134,10 +132,8 @@ export class AddonComponent implements OnInit {
                 validActions.push({
                     title: this.translate.instant("Mark as done"),
                     handler: async (objs) => {
-                        objs.forEach(todo => {
-                            todo.Completed = true;
-                        });
-                        this.todoservice.upsertTodos(filterObjFields(objs))
+                        objs = objs.filter(obj => obj.Completed === false).map(obj => ({Key: obj.Key, Completed: true}));
+                        this.todoservice.upsertTodos(objs)
                         .finally(() => {
                             this.genericListComponent.reload();
                         })
@@ -155,28 +151,4 @@ export class AddonComponent implements OnInit {
             queryParamsHandling: 'preserve'
         });
     }
-    
-}
-
-function filterObjFields(objsList): any[] {
-    let res = [];
-    objsList.forEach(doc => {
-        let filtered = {
-            Name: doc.Name,
-            Description: doc.Description,
-            DueDate: doc.DueDate,
-            Completed: doc.Completed
-        }
-    
-        if (doc.Key){
-            filtered["Key"] = doc.Key;
-        }
-    
-        if (doc.Hidden){
-            filtered["Hidden"] = doc.Hidden;
-        }
-        res.push(filtered);
-    });
-    
-    return res;
 }

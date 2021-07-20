@@ -25,6 +25,9 @@ export class TodosService {
   }
 
   upsertTodos(todos){
+    if(!Array.isArray(todos)){
+      todos = [todos];
+    }
     return this.addonService.papiClient.addons.api.uuid(this.addonService.addonUUID).file('api').func('todos').post(undefined, todos);
   }
 }
