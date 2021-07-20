@@ -3,7 +3,7 @@
         Manage a list of todo's.
         You can create and edit this list here
     </h3>
-    <generic-list [allowMultipleSelection]="true" [inline]="true" [dataSource]="listDataSource">
+    <generic-list [allowMultipleSelection]="true" [inline]="true" [dataSource]="listDataSource" [showSearch]=true>
     <div right-buttons>
         <pep-button [styleType]="'strong'" [sizeType]="'sm'" [value]="'Add' | translate" (buttonClick)="addItem()"></pep-button>
     </div>

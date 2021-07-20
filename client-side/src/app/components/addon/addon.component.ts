@@ -42,7 +42,14 @@ export class AddonComponent implements OnInit {
 
     listDataSource: GenericListDataSource = {
         getList: async (state) => {
-            return this.todoservice.getTodos();
+            let options = {};
+            if(state){
+                options = {
+                    where: `Name LIKE '%${state.searchString}%'`
+                }
+            }
+            
+            return this.todoservice.getTodos(options);
         },
 
         getDataView: async () => {

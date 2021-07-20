@@ -10,8 +10,8 @@ export class TodosService {
     private addonService: AddonService
   ) { }
 
-  getTodos(){
-    return this.get({});
+  getTodos(options?){
+    return this.get(options);
   }
   
   getTodo(todoUUID: string){
