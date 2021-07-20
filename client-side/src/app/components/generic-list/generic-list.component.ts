@@ -46,7 +46,6 @@ export interface GenericListDataSource {
         title: string;
         handler: (obj: any) => Promise<void>;
     }[]>;
-    addItem(): Promise<any>;
 }
 
 @Component({

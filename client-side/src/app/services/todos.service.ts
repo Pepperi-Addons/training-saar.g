@@ -24,9 +24,7 @@ export class TodosService {
     return this.addonService.papiClient.addons.api.uuid(this.addonService.addonUUID).file('api').func('todos').get(options)
   }
 
-  upsertTodos(todos: [any]){
-    for(let i = 0; i < todos.length; i++){
-      return this.addonService.papiClient.addons.api.uuid(this.addonService.addonUUID).file('api').func('todos').post(undefined, todos[0]);
-    }    
+  upsertTodos(todos){
+    return this.addonService.papiClient.addons.api.uuid(this.addonService.addonUUID).file('api').func('todos').post(undefined, todos);
   }
 }

@@ -1,9 +1,9 @@
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ViewChild } from "@angular/core";
 import { PepLayoutService, PepScreenSizeType } from '@pepperi-addons/ngx-lib';
 import { AddonService } from '../../services/addon.service';
 import { PepDialogData, PepDialogService } from '@pepperi-addons/ngx-lib/dialog';
-import { GenericListDataSource } from '../generic-list/generic-list.component';
+import { GenericListComponent, GenericListDataSource } from '../generic-list/generic-list.component';
 import { TodoForm } from '../form/todo-form.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TodosService } from '../../services/todos.service';
@@ -16,6 +16,8 @@ import { TodosService } from '../../services/todos.service';
   providers: [TranslatePipe]
 })
 export class AddonComponent implements OnInit {
+
+    @ViewChild(GenericListComponent) genericListComponent;
 
     screenSize: PepScreenSizeType;
 
@@ -38,14 +40,6 @@ export class AddonComponent implements OnInit {
     }
 
     listDataSource: GenericListDataSource = {
-        addItem: async () => {
-            debugger;
-            return this.router.navigate(['./addTodo'], {
-                relativeTo: this.route,
-                queryParamsHandling: 'preserve'
-            })
-        },
-
         getList: async (state) => {
             return this.todoservice.getTodos();
         },
@@ -110,7 +104,6 @@ export class AddonComponent implements OnInit {
 
         getActions: async (objs) =>  {
             let validActions = [];
-            // debugger;
 
             if(objs.length === 1){
                 validActions.push({
@@ -128,20 +121,62 @@ export class AddonComponent implements OnInit {
                 validActions.push({
                     title: this.translate.instant("Delete"),
                     handler: async (objs) => {
-                        //TODO implement
+                        objs.forEach(todo => {
+                            todo.Hidden = true;
+                        });
+                        this.todoservice.upsertTodos(filterObjFields(objs))
+                        .finally(() => {
+                            this.genericListComponent.reload();
+                        })
                     }
                 });
 
                 validActions.push({
-                    title: this.translate.instant("Complete"),
+                    title: this.translate.instant("Mark as done"),
                     handler: async (objs) => {
-                        //TODO implement
+                        objs.forEach(todo => {
+                            todo.Completed = true;
+                        });
+                        this.todoservice.upsertTodos(filterObjFields(objs))
+                        .finally(() => {
+                            this.genericListComponent.reload();
+                        })
                     }
                 });
             }
             
            return validActions;
         }
-        
     }
+
+    addItem(){
+        return this.router.navigate(['./addTodo'], {
+            relativeTo: this.route,
+            queryParamsHandling: 'preserve'
+        });
+    }
+    
+}
+
+function filterObjFields(objsList): any[] {
+    let res = [];
+    objsList.forEach(doc => {
+        let filtered = {
+            Name: doc.Name,
+            Description: doc.Description,
+            DueDate: doc.DueDate,
+            Completed: doc.Completed
+        }
+    
+        if (doc.Key){
+            filtered["Key"] = doc.Key;
+        }
+    
+        if (doc.Hidden){
+            filtered["Hidden"] = doc.Hidden;
+        }
+        res.push(filtered);
+    });
+    
+    return res;
 }

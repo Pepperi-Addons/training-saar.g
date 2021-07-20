@@ -40,6 +40,7 @@ export class TodoForm implements OnInit {
         else{
             todosService.getTodo(this.key).then(obj => {
                 this.obj = obj[0];
+                this.calculateDisableSaveButton();
                 this.loading = false;
             });
         }
@@ -54,7 +55,7 @@ export class TodoForm implements OnInit {
     obj = {
         Name: '',
         Description: '',
-        DueDate: ''
+        DueDate: '',
     };
 
     ngOnInit(){
@@ -109,6 +110,10 @@ export class TodoForm implements OnInit {
     }
 
     onValueChanged(event: IPepFieldValueChangeEvent) {
+        this.calculateDisableSaveButton();
+    }
+
+    private calculateDisableSaveButton() {
         this.disableSaveButton = (this.obj.Name === "" || this.obj.Description === "");
     }
 }
@@ -116,18 +121,6 @@ export class TodoForm implements OnInit {
 
 
 function filterObj(obj): [any] {
-
-    // debugger;  
-    // const allowed = ['Name', 'Description', 'DueDate', 'Completed'];
-      
-    //   const filtered = Object.keys(obj)
-    //     .filter(key => allowed.includes(key))
-    //     .reduce((obj, key) => {
-    //       obj[key] = obj[key];
-    //       return obj;
-    //     }, {});
-
-    //     debugger;
     let filtered = {
         Name: obj.Name,
         Description: obj.Description,
@@ -139,6 +132,9 @@ function filterObj(obj): [any] {
         filtered["Key"] = obj.Key;
     }
 
+    if (obj.Hidden){
+        filtered["Hidden"] = obj.Hidden;
+    }
     return [filtered];
 }
 

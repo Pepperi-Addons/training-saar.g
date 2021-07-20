@@ -4,7 +4,9 @@
         You can create and edit this list here
     </h3>
     <generic-list [allowMultipleSelection]="true" [inline]="true" [dataSource]="listDataSource">
-
+    <div right-buttons>
+        <pep-button [value]="'Add' | translate" (buttonClick)="addItem()"></pep-button>
+    </div>
     </generic-list>
 </div>
 
