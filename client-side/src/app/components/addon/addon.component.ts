@@ -30,6 +30,7 @@ export class AddonComponent implements OnInit {
         public todoservice: TodosService
     ) {
 
+        this.addonService.addonUUID = this.route.snapshot.params.addon_uuid;
         this.layoutService.onResize$.subscribe(size => {
             this.screenSize = size;
         });
