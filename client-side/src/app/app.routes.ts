@@ -13,17 +13,12 @@ export class EmptyRouteComponent {}
 
 const routes: Routes = [
     {
-        path: `settings/:addon_uuid`,
-        children: [
-            {
-                path: 'todos',
-                component: AddonComponent,
-            },
-            {
-                path: 'todos/:todo_uuid',
-                component: TodoForm
-            }
-        ]
+        path: `settings/:addon_uuid/todos`,
+        component: AddonComponent
+    },
+    {
+        path: 'settings/:addon_uuid/todos/:todo_uuid',
+        component: TodoForm
     },
     {
         path: '**',
@@ -32,7 +27,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-    imports: [RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' })],
+    imports: [RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' , paramsInheritanceStrategy: 'always'})],
     exports: [RouterModule]
 })
 export class AppRoutingModule { }

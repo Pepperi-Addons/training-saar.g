@@ -9,9 +9,9 @@ import {PepHttpService, PepDataConvertorService, PepSessionService} from '@peppe
 export class AddonService {
 
     accessToken = '';
-    parsedToken: any
-    papiBaseURL = ''
-    addonUUID = 'f6458728-25fd-469d-9a20-73a99265fe52';
+    parsedToken: any;
+    papiBaseURL = '';
+    addonUUID : string;
 
     get papiClient(): PapiClient {
         return new PapiClient({
@@ -19,7 +19,7 @@ export class AddonService {
             token: this.session.getIdpToken(),
             addonUUID: this.addonUUID,
             suppressLogging:true
-        })
+        });
     }
 
     constructor(
@@ -29,7 +29,7 @@ export class AddonService {
     ) {
         const accessToken = this.session.getIdpToken();
         this.parsedToken = jwt(accessToken);
-        this.papiBaseURL = this.parsedToken["pepperi.baseurl"]
+        this.papiBaseURL = this.parsedToken["pepperi.baseurl"];
     }
 
     async get(endpoint: string): Promise<any> {
