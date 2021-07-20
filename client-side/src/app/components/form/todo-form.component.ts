@@ -73,18 +73,8 @@ export class TodoForm implements OnInit {
     }
 
     saveClicked() {
-        this.todosService.upsertTodos(filterObj(this.obj))
-        .then(res => {
-            this.dialogService.openDefaultDialog(new PepDialogData({
-                title: 'Saved'
-            }));
-        })
-        .catch(err =>{
-            this.dialogService.openDefaultDialog(new PepDialogData({
-                title: 'Error saving',
-                content: err
-            }));
-        });       
+        this.todosService.upsertTodos(filterObj(this.obj));
+        this.goBack();
     }
 
     cancelClicked() {
