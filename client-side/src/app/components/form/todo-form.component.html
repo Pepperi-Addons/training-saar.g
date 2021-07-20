@@ -4,8 +4,8 @@
             <pep-button [value]="'Todos List' | translate" (buttonClick)="backClicked()" [iconName]="'arrow_left_alt'"></pep-button>
         </div>
         <div  header-end-content>
-            <pep-button [value]="'Cancel' | translate" (buttonClick)="cancelClicked()"></pep-button>
-            <pep-button [value]="'Save' | translate" [styleType]="'strong'" (buttonClick)="saveClicked()" [disabled] = "disableSaveButton"></pep-button>
+            <pep-button [value]="'Cancel' | translate" [sizeType]="'sm'" (buttonClick)="cancelClicked()"></pep-button>
+            <pep-button [value]="'Save' | translate" [styleType]="'strong'" [sizeType]="'sm'" (buttonClick)="saveClicked()" [disabled] = "disableSaveButton"></pep-button>
         </div>
     </pep-top-bar>
     <h5>{{ 'Define the todo details' | translate}}</h5>
