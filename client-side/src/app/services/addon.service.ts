@@ -41,13 +41,7 @@ export class AddonService {
     }
 
     pepGet(endpoint: string, httpOptions?: any): Observable<any> {
-        if(httpOptions){
-            return this.pepHttp.getPapiApiCall(endpoint, httpOptions);
-        }
-        else{
-            return this.pepHttp.getPapiApiCall(endpoint);
-        }
-        
+        return this.pepHttp.getPapiApiCall(endpoint, httpOptions);
     }
 
     pepPost(endpoint: string, body: any): Observable<any> {

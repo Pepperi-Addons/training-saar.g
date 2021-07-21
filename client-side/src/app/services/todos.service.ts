@@ -10,7 +10,7 @@ export class TodosService {
     private addonService: AddonService
   ) { }
 
-  getTodos(options?){
+  getTodos(options?: {were?: string}){
     return this.get(options);
   }
   

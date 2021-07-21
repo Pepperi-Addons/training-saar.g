@@ -43,7 +43,7 @@ export class AddonComponent implements OnInit {
     listDataSource: GenericListDataSource = {
         getList: async (state) => {
             let options = {};
-            if(state){
+            if(state.searchString){
                 options = {
                     where: `Name LIKE '%${state.searchString}%'`
                 }
@@ -130,10 +130,8 @@ export class AddonComponent implements OnInit {
                     title: this.translate.instant("Delete"),
                     handler: async (objs) => {
                         objs = objs.map(obj => ({Key: obj.Key, Hidden: true}));
-                        await this.todoservice.upsertTodos(objs)
-                        .finally(() => {
-                            this.genericListComponent.reload();
-                        })
+                        await this.todoservice.upsertTodos(objs);
+                        this.genericListComponent.reload();
                     }
                 });
 
@@ -141,10 +139,8 @@ export class AddonComponent implements OnInit {
                     title: this.translate.instant("Mark as done"),
                     handler: async (objs) => {
                         objs = objs.filter(obj => obj.Completed === false || obj.Completed === undefined).map(obj => ({Key: obj.Key, Completed: true}));
-                        await this.todoservice.upsertTodos(objs)
-                        .finally(() => {
-                            this.genericListComponent.reload();
-                        })
+                        await this.todoservice.upsertTodos(objs);
+                        this.genericListComponent.reload();
                     }
                 });
             }
