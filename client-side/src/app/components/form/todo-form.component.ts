@@ -26,6 +26,7 @@ export class TodoForm implements OnInit {
         public activatedRoute: ActivatedRoute,
         private todosService: TodosService
     ) {
+        this.addonService.addonUUID = this.activatedRoute.snapshot.params.addon_uuid;
 
         this.layoutService.onResize$.subscribe(size => {
             this.screenSize = size;
