@@ -21,7 +21,9 @@ export class TodosService {
   }
 
   private get(options){
-    return this.addonService.papiClient.addons.api.uuid(this.addonService.addonUUID).file('api').func('todos').get(options)
+    return this.addonService.pepGet(`/addons/api/${this.addonService.addonUUID}/api/todos`, {
+      params: options
+    }).toPromise();
   }
 
   upsertTodos(todos){

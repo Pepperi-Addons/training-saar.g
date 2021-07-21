@@ -72,8 +72,8 @@ export class TodoForm implements OnInit {
         this.goBack();
     }
 
-    saveClicked() {
-        this.todosService.upsertTodos(filterObj(this.obj));
+    async saveClicked() {
+        await this.todosService.upsertTodos(filterObj(this.obj));
         this.goBack();
     }
 
