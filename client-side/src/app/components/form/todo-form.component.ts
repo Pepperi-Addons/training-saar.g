@@ -39,7 +39,7 @@ export class TodoForm implements OnInit {
         }
         else{
             todosService.getTodo(this.key).then(obj => {
-                this.obj = obj[0];
+                this.obj = obj;
                 this.calculateDisableSaveButton();
                 this.loading = false;
             });
@@ -73,7 +73,7 @@ export class TodoForm implements OnInit {
     }
 
     async saveClicked() {
-        await this.todosService.upsertTodos(filterObj(this.obj));
+        await this.todosService.upsertTodos(this.obj);
         this.goBack();
     }
 
@@ -106,22 +106,4 @@ export class TodoForm implements OnInit {
     private calculateDisableSaveButton() {
         this.disableSaveButton = (this.obj.Name === "" || this.obj.Description === "");
     }
-}
-
-function filterObj(obj): [any] {
-    let filtered = {
-        Name: obj.Name,
-        Description: obj.Description,
-        DueDate: obj.DueDate,
-        Completed: obj.Completed
-    }
-
-    if (obj.Key){
-        filtered["Key"] = obj.Key;
-    }
-
-    if (obj.Hidden){
-        filtered["Hidden"] = obj.Hidden;
-    }
-    return [filtered];
 }

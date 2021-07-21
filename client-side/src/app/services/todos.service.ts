@@ -10,14 +10,16 @@ export class TodosService {
     private addonService: AddonService
   ) { }
 
-  getTodos(options?: {were?: string}){
+  getTodos(options?: {where?: string}){
     return this.get(options);
   }
   
   getTodo(todoUUID: string){
-    return this.get({
-      where: `Key = '${todoUUID}'`
-    });
+    const options = {Key: todoUUID};
+
+    return this.addonService.pepGet(`/addons/api/${this.addonService.addonUUID}/api/getByKey`, {
+      params: options
+    }).toPromise();
   }
 
   private get(options){

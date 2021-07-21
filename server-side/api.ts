@@ -14,6 +14,17 @@ export async function todos(client: Client, request: Request) {
             throw new Error(`Unsupported method: ${request.method}`);
         }
     }
+}
 
-};
+export async function getByKey(client: Client, request: Request) {
+    const todosService = new TodosService(client)
+    switch (request.method){
+        case "GET": {
+            return todosService.getTodoByKey(request.query);
+        }
+        default:{
+            throw new Error(`Unsupported method: ${request.method}`);
+        }
+    }
+}
 

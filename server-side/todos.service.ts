@@ -22,13 +22,16 @@ class TodosService {
     }
     
     getTodos(options) {
+        return this.papiClient.addons.data.uuid(this.addonUUID).table(TABLE_NAME).find(options);
+    }
+
+    getTodoByKey(options){
         if(objectHasOnlyKeyField(options)){
             return this.papiClient.addons.data.uuid(this.addonUUID).table(TABLE_NAME).key(options.Key).get();
         }
         else{
-            return this.papiClient.addons.data.uuid(this.addonUUID).table(TABLE_NAME).find(options);
+            throw new Error(`No key sent.`);
         }
-        
     }
 
     upsertTodo(body: any) {
