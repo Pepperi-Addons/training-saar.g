@@ -45,7 +45,7 @@ export class AddonComponent implements OnInit {
             let options = {};
             if(state.searchString){
                 options = {
-                    where: `Name LIKE '%${state.searchString}%'`
+                    where: `Name LIKE '%${state.searchString}%' OR Description LIKE '%${state.searchString}%'`
                 }
             }
             
