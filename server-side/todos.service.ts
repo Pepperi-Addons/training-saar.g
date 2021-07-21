@@ -22,7 +22,13 @@ class TodosService {
     }
     
     getTodos(options) {
-        return this.papiClient.addons.data.uuid(this.addonUUID).table(TABLE_NAME).find(options);
+        if(objectHasOnlyKeyField(options)){
+            return this.papiClient.addons.data.uuid(this.addonUUID).table(TABLE_NAME).key(options.Key).get();
+        }
+        else{
+            return this.papiClient.addons.data.uuid(this.addonUUID).table(TABLE_NAME).find(options);
+        }
+        
     }
 
     upsertTodo(body: any) {
@@ -76,3 +82,7 @@ class TodosService {
 }
 
 export default TodosService;
+
+function objectHasOnlyKeyField(options: any) {
+    return (Object.keys(options).length == 1 && options.Key)
+}
