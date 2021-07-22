@@ -44,8 +44,12 @@ export class AddonComponent implements OnInit {
         getList: async (state) => {
             let options = {};
             if(state.searchString){
+                const splitSearchString = state.searchString.split(" ").filter(elem => elem != "");
+                const columnNames = ["Name", "Description"];
+
+                const query = this.getCNFrepresentationQuery(splitSearchString, columnNames);
                 options = {
-                    where: `Name LIKE '%${state.searchString}%' OR Description LIKE '%${state.searchString}%'`
+                    where: query
                 }
             }
             
@@ -147,6 +151,26 @@ export class AddonComponent implements OnInit {
             
            return validActions;
         }
+    }
+
+    private getCNFrepresentationQuery(searchTerms: string[], columnNames: string[]) {
+        let query = "";
+
+        for (let i = 0; i < searchTerms.length; i++) {
+            if (i != 0) {
+                query += " AND ";
+            }
+            query += "(";
+            for (let j = 0; j < columnNames.length; j++) {
+                if (j != 0) {
+                    query += " OR ";
+                }
+                query += `${columnNames[j]} LIKE '%${searchTerms[i]}%'`;
+            }
+
+            query += ")";
+        }
+        return query;
     }
 
     addItem(){
