@@ -17,7 +17,7 @@ export class TodosService {
   getTodo(todoUUID: string){
     const options = {Key: todoUUID};
 
-    return this.addonService.pepGet(`/addons/api/${this.addonService.addonUUID}/api/getByKey`, {
+    return this.addonService.pepGet(`/addons/api/${this.addonService.addonUUID}/api/get_by_key`, {
       params: options
     }).toPromise();
   }
