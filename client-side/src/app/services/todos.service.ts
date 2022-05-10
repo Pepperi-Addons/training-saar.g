@@ -10,18 +10,22 @@ export class TodosService {
     private addonService: AddonService
   ) { }
 
-  getTodos(){
-    return this.get({});
+  getTodos(options?: {where?: string}){
+    return this.get(options);
   }
   
   getTodo(todoUUID: string){
-    return this.get({
-      where: `Key = '${todoUUID}'`
-    });
+    const options = {Key: todoUUID};
+
+    return this.addonService.pepGet(`/addons/api/${this.addonService.addonUUID}/api/get_by_key`, {
+      params: options
+    }).toPromise();
   }
 
   private get(options){
-    return this.addonService.papiClient.addons.api.uuid(this.addonService.addonUUID).file('api').func('todos').get(options)
+    return this.addonService.pepGet(`/addons/api/${this.addonService.addonUUID}/api/todos`, {
+      params: options
+    }).toPromise();
   }
 
   upsertTodos(todos){

@@ -42,7 +42,18 @@ export class AddonComponent implements OnInit {
 
     listDataSource: GenericListDataSource = {
         getList: async (state) => {
-            return this.todoservice.getTodos();
+            let options = {};
+            if(state.searchString){
+                const splitSearchString = state.searchString.split(" ").filter(elem => elem != "");
+                const columnNames = ["Name", "Description"];
+
+                const query = this.getCNFrepresentationQuery(splitSearchString, columnNames);
+                options = {
+                    where: query
+                }
+            }
+            
+            return await this.todoservice.getTodos(options);
         },
 
         getDataView: async () => {
@@ -123,27 +134,43 @@ export class AddonComponent implements OnInit {
                     title: this.translate.instant("Delete"),
                     handler: async (objs) => {
                         objs = objs.map(obj => ({Key: obj.Key, Hidden: true}));
-                        this.todoservice.upsertTodos(objs)
-                        .finally(() => {
-                            this.genericListComponent.reload();
-                        })
+                        await this.todoservice.upsertTodos(objs);
+                        this.genericListComponent.reload();
                     }
                 });
 
                 validActions.push({
                     title: this.translate.instant("Mark as done"),
                     handler: async (objs) => {
-                        objs = objs.filter(obj => obj.Completed === false).map(obj => ({Key: obj.Key, Completed: true}));
-                        this.todoservice.upsertTodos(objs)
-                        .finally(() => {
-                            this.genericListComponent.reload();
-                        })
+                        objs = objs.filter(obj => obj.Completed === false || obj.Completed === undefined).map(obj => ({Key: obj.Key, Completed: true}));
+                        await this.todoservice.upsertTodos(objs);
+                        this.genericListComponent.reload();
                     }
                 });
             }
             
            return validActions;
         }
+    }
+
+    private getCNFrepresentationQuery(searchTerms: string[], columnNames: string[]) {
+        let query = "";
+
+        for (let i = 0; i < searchTerms.length; i++) {
+            if (i != 0) {
+                query += " AND ";
+            }
+            query += "(";
+            for (let j = 0; j < columnNames.length; j++) {
+                if (j != 0) {
+                    query += " OR ";
+                }
+                query += `${columnNames[j]} LIKE '%${searchTerms[i]}%'`;
+            }
+
+            query += ")";
+        }
+        return query;
     }
 
     addItem(){

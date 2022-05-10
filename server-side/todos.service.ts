@@ -25,6 +25,15 @@ class TodosService {
         return this.papiClient.addons.data.uuid(this.addonUUID).table(TABLE_NAME).find(options);
     }
 
+    getTodoByKey(options){
+        if(objectHasOnlyKeyField(options)){
+            return this.papiClient.addons.data.uuid(this.addonUUID).table(TABLE_NAME).key(options.Key).get();
+        }
+        else{
+            throw new Error(`No key sent.`);
+        }
+    }
+
     upsertTodo(body: any) {
         //Handling a single todo as an array of size 1 will allow for a general processing.
         if(!Array.isArray(body)){
@@ -76,3 +85,7 @@ class TodosService {
 }
 
 export default TodosService;
+
+function objectHasOnlyKeyField(options: any) {
+    return (Object.keys(options).length == 1 && options.Key)
+}
