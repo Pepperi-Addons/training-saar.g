@@ -1,0 +1,52 @@
+name: PublishAddon
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  push:
+    branches: 
+      - master
+      - main
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v2
+
+    # Set up git
+    - name: Setup GIT
+      run: git config --global user.email "action@github.com" && git config --global user.name "GitHub Action"
+
+    # Install node modules
+    - name: Installation
+      run: npm run init
+
+    # build the addon files
+    - name: Build
+      run: npm run build
+
+    # check if build has changed
+    - name: Needs Publish
+      run: echo "needs_publish=`git diff-index --quiet HEAD publish || echo 1`" >> $GITHUB_ENV
+
+    # Check value
+    - name: Publish?
+      run: echo ${{ env.needs_publish }}
+
+    # Get Version
+    - name: Description
+      if: ${{ env.needs_publish == '1' }}
+      run: echo "version_description=`git log --oneline --format=%B | head -n 1 | sed s/\(#[0-9]*\)//g | sed s/-/\ /g`" >> $GITHUB_ENV 
+
+    # Publish addon version
+    - name: Publish
+      env:
+          PEPPERI_ADDON_PUBLISH_KEY: ${{ secrets.PEPPERI_ADDON_PUBLISH_KEY }}
+      if: ${{ env.needs_publish == '1' }}
+      run: npm run publish-addon -- -d "${{ env.version_description }}" -sk ${{ env.PEPPERI_ADDON_PUBLISH_KEY }}
+
+    # Publish addon version
+    - name: Commit changes
+      if: ${{ env.needs_publish == '1' }}
+      run: git add * && git commit -m "version bump" && git push -f
