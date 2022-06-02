@@ -18,7 +18,7 @@
 	"dependencies": {
 		"@pepperi-addons/ngx-composite-lib": "0.0.16-beta.1",
 		"@pepperi-addons/ngx-lib": "^0.3.15-beta.1",
-		"@pepperi-addons/papi-sdk": "file:../papi-sdk/pepperi-addons-papi-sdk-1.32.0.tgz",
+		"@pepperi-addons/papi-sdk": "*",
 		"@pepperi-addons/scripts": "^2.0.4",
 		"uuid": "^8.3.2"
 	},
