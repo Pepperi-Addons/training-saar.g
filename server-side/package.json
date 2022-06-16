@@ -30,6 +30,10 @@
     },
     "dependencies": {
         "@pepperi-addons/debug-server": "0.0.30",
-        "@pepperi-addons/papi-sdk": "1.31.0"
+        "@pepperi-addons/papi-sdk": "1.31.0",
+        "@pepperi-addons/ngx-composite-lib": "0.0.16-beta.1",
+		"@pepperi-addons/ngx-lib": "^0.3.15-beta.1",
+        "uuid": "^8.3.2"
+
     }
 }
