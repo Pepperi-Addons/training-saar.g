@@ -10,11 +10,7 @@ The error Message is importent! it will be written in the audit log and help the
 
 import { Client, Request } from '@pepperi-addons/debug-server'
 import { PapiClient, Relation } from '@pepperi-addons/papi-sdk'
-import {
-    IPepGenericFormDataSource,
-    IPepGenericFormDataView,    
-    PepGenericFormService
-} from '@pepperi-addons/ngx-composite-lib/generic-form';
+import {IPepGenericFormDataView } from '@pepperi-addons/ngx-composite-lib/generic-form';
 
 
 export async function install(client: Client, request: Request): Promise<any> {
