@@ -25,7 +25,8 @@
         "rollup": "^2.10.9",
         "rollup-plugin-typescript2": "^0.27.1",
         "ts-node": "^8.10.1",
-        "typescript": "~3.8.0"
+        "typescript": "~3.8.0",
+        "@pepperi-addons/ngx-composite-lib": "0.0.16-beta.1"
     },
     "dependencies": {
         "@pepperi-addons/debug-server": "0.0.30",
