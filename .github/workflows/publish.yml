@@ -22,9 +22,13 @@ jobs:
     - uses: actions/setup-node@v2
       with:
         node-version: '14'
-    # Install node modules
+    # Install node modules in projects
     - name: Installation
       run: npm run init
+    
+    # Install scripts in root folder
+    - name: Installation
+      run: npm install
 
     # build the addon files
     - name: Build
@@ -54,4 +58,4 @@ jobs:
     # Publish addon version
     - name: Commit changes
       if: ${{ env.needs_publish == '1' }}
-      run: git add * && git commit -m "version bump" && git push -f
+      run: git add . && git commit -m "version bump" && git push -f
