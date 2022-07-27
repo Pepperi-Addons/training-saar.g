@@ -3,11 +3,11 @@ name: PublishAddon
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
 on:
-  push:
-    branches: 
-      - master
-      - main
   workflow_call:
+    secrets:
+      PEPPERI_ADDON_PUBLISH_KEY:
+        required: true
+      PEPPERI_ADDON_INFRA_SDK_READ_ACCESS:
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -20,6 +20,11 @@ jobs:
     - name: Setup GIT
       run: git config --global user.email "action@github.com" && git config --global user.name "GitHub Action"
 
+      env:
+        PEPPERI_ADDON_INFRA_SDK_READ_ACCESS: ${{ secrets.PEPPERI_ADDON_INFRA_SDK_READ_ACCESS }}
+      if: "${{ env.PEPPERI_ADDON_INFRA_SDK_READ_ACCESS != '' }}"
+      run: echo "@pepperi-addons/addon-infra-sdk:registry=https://npm.pkg.github.com \n //npm.pkg.github.com/:_authToken=$PEPPERI_ADDON_INFRA_SDK_READ_ACCESS" >> ~/.npmrc
+
     - uses: actions/setup-node@v2
       with:
         node-version: '14'
@@ -28,7 +33,7 @@ jobs:
       run: npm run init
     
     # Install scripts in root folder
-    - name: Installation
+    - name: Scripts installation
       run: npm install
 
     # build the addon files
