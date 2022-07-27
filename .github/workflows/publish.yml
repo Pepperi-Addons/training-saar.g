@@ -20,6 +20,7 @@ jobs:
     - name: Setup GIT
       run: git config --global user.email "action@github.com" && git config --global user.name "GitHub Action"
 
+    - name: Optionally run npmrc
       env:
         PEPPERI_ADDON_INFRA_SDK_READ_ACCESS: ${{ secrets.PEPPERI_ADDON_INFRA_SDK_READ_ACCESS }}
       if: "${{ env.PEPPERI_ADDON_INFRA_SDK_READ_ACCESS != '' }}"
