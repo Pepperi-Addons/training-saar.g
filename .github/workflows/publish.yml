@@ -25,6 +25,10 @@ jobs:
         PEPPERI_ADDON_INFRA_SDK_READ_ACCESS: ${{ secrets.PEPPERI_ADDON_INFRA_SDK_READ_ACCESS }}
       if: "${{ env.PEPPERI_ADDON_INFRA_SDK_READ_ACCESS != '' }}"
       run: echo "@pepperi-addons/addon-infra-sdk:registry=https://npm.pkg.github.com \n //npm.pkg.github.com/:_authToken=$PEPPERI_ADDON_INFRA_SDK_READ_ACCESS" >> ~/.npmrc
+
+    - name: Dont run npmrc
+      env:
+        PEPPERI_ADDON_INFRA_SDK_READ_ACCESS: ${{ secrets.PEPPERI_ADDON_INFRA_SDK_READ_ACCESS }}
       if: "${{ env.PEPPERI_ADDON_INFRA_SDK_READ_ACCESS == '' }}"
       run: echo "No npmrc file created..."
 
