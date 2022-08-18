@@ -8,6 +8,7 @@ on:
       PEPPERI_ADDON_PUBLISH_KEY:
         required: true
       PEPPERI_ADDON_INFRA_SDK_READ_ACCESS:
+      PEPPERI_ADDON_JIRA_TESTS_URL:
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -68,7 +69,18 @@ jobs:
       if: ${{ env.needs_publish == '1' }}
       run: npm run publish-addon -- -d "${{ env.version_description }}" -sk ${{ env.PEPPERI_ADDON_PUBLISH_KEY }}
 
-    # Publish addon version
+    # Commit changes
     - name: Commit changes
       if: ${{ env.needs_publish == '1' }}
       run: git add . && git commit -m "version bump" && git push -f
+
+    # Call Jira tests
+    # For more information, see: https://github.com/marketplace/actions/http-request-action
+    - name: Jira Tests
+      env:
+        PEPPERI_ADDON_JIRA_TESTS_URL: ${{ secrets.PEPPERI_ADDON_JIRA_TESTS_URL }}
+      if: "${{ env.PEPPERI_ADDON_JIRA_TESTS_URL != '' }}"
+      uses: fjogeleit/http-request-action@v1
+      with:
+        url: "${{ env.PEPPERI_ADDON_JIRA_TESTS_URL }}"
+        method: 'POST'
