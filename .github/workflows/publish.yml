@@ -84,3 +84,12 @@ jobs:
       with:
         url: "${{ env.PEPPERI_ADDON_JIRA_TESTS_URL }}"
         method: 'POST'
+    # trigger jenkins by web requests, based on https://github.com/Satak/webrequest-action
+    # Jenkins JOB must be defined with Parameters
+    - name: Submit for QA - Addons Api Tests
+      uses: satak/webrequest-action@master
+      with:
+        url: ${{ secrets.JENKINS_GITHUB_HOST }}${{ secrets.JENKINS_GITHUB_JOB }}/buildWithParameters?token=${{ secrets.JENKINS_GITHUB_TOKEN }}&GitRepo=${{ github.repository }}
+        method: GET
+        username: ${{ secrets.JENKINS_GITHUB_USER }}
+        password: ${{ secrets.JENKINS_GITHUB_PASS }}
