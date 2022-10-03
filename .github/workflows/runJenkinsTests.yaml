@@ -1,0 +1,40 @@
+name: RunJenkinsTests
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  workflow_call:
+    secrets:
+      JENKINS_GITHUB_HOST:
+      JENKINS_GITHUB_TOKEN:
+      JENKINS_GITHUB_JOB:
+      JENKINS_GITHUB_PASS:
+      JENKINS_GITHUB_USER:
+  inputs:
+      shouldMarkAsUnavilableOnFail:
+        type: boolean
+        default: true
+      
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+    
+    # trigger jenkins by web requests, based on https://github.com/Satak/webrequest-action
+    # Jenkins JOB must be defined with Parameters
+    - name: Submit for QA - Addons Api Tests
+      env:
+          JENKINS_GITHUB_HOST: ${{ secrets.JENKINS_GITHUB_HOST }}
+          JENKINS_GITHUB_TOKEN: ${{ secrets.JENKINS_GITHUB_TOKEN }}
+          JENKINS_GITHUB_PASS: ${{ secrets.JENKINS_GITHUB_PASS }}
+          JENKINS_GITHUB_USER: ${{ secrets.JENKINS_GITHUB_USER }}
+          JENKINS_GITHUB_JOB: ${{ secrets.JENKINS_GITHUB_JOB }}
+          ARE_SECRETS_PASSED : ${{ env.JENKINS_GITHUB_HOST != '' && env.JENKINS_GITHUB_JOB != '' && env.JENKINS_GITHUB_USER != '' && env.JENKINS_GITHUB_TOKEN != '' && env.JENKINS_GITHUB_PASS != '' }}
+
+      if: "${{ env.ARE_SECRETS_PASSED }}"
+      uses: satak/webrequest-action@master
+      with:
+        url: ${{ env.JENKINS_GITHUB_HOST }}${{ env.JENKINS_GITHUB_JOB }}/buildWithParameters?token=${{ env.JENKINS_GITHUB_TOKEN }}&GitRepo=${{ github.repository }}&shouldMarkAsUnavilableOnFail=${{ inputs.shouldMarkAsUnavilableOnFail }}
+        method: GET
+        username: ${{ env.JENKINS_GITHUB_USER }}
+        password: ${{ env.JENKINS_GITHUB_PASS }}
