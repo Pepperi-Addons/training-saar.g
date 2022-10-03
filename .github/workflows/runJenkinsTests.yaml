@@ -10,10 +10,10 @@ on:
       JENKINS_GITHUB_JOB:
       JENKINS_GITHUB_PASS:
       JENKINS_GITHUB_USER:
-  inputs:
-      shouldMarkAsUnavilableOnFail:
-        type: boolean
-        default: true
+    inputs:
+        shouldMarkAsUnavilableOnFail:
+          type: boolean
+          default: true
       
 jobs:
   publish:
