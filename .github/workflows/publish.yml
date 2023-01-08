@@ -45,12 +45,12 @@ jobs:
         echo "should_update_json_version: $should_update_json_version"
         echo "::set-env name=should_update_json_version::$should_update_json_version"
     - name: Update json version
-      if: ${{ should_update_json_version }}
+      if: ${{ env.should_update_json_version }}
       run: |
         jq --arg Version "$branch_version" '.Version=$branch_version | .0' addon.config.json
         
     - name: Commit and push changes
-      if: ${{ should_update_json_version }}
+      if: ${{ env.should_update_json_version }}
       run: |
         git add addon.config.json
         git commit -m "Update version and build number in JSON file"
