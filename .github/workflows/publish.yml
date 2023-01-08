@@ -13,14 +13,13 @@ jobs:
     
       
     steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v2
+
+
+    # Set up git
     - name: Setup GIT
       run: git config --global user.email "action@github.com" && git config --global user.name "GitHub Action"
-      
-    - name: Checkout repository
-      uses: actions/checkout@v2
-      
-    - name: Move to branch
-      run: git checkout $GITHUB_REF
       
     - name: Extract version from branch name
       run: |
