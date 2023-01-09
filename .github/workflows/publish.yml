@@ -1,58 +1,100 @@
 name: PublishAddon
 
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
 on:
   push:
     branches:
-      - 'release/**'
-
-
-      
+      - main
+  workflow_call:
+    secrets:
+      PEPPERI_ADDON_PUBLISH_KEY:
+        required: true
+      PEPPERI_ADDON_INFRA_SDK_READ_ACCESS:
+      PEPPERI_ADDON_JIRA_TESTS_URL:
+      JENKINS_GITHUB_HOST:
+      JENKINS_GITHUB_TOKEN:
+      JENKINS_GITHUB_JOB:
+      JENKINS_GITHUB_PASS:
+      JENKINS_GITHUB_USER:
 jobs:
-  enforce-version:
+  publish:
     runs-on: ubuntu-latest
-    
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-      
-    - name: Move to branch
-      run: git checkout $GITHUB_REF
-      
-    - name: Extract version from branch name
-      run: |
-          mmajor_version=$(echo $GITHUB_REF | cut -d '/' -f 2 | cut -d '.' -f 1)
-          minor_version=$(echo $GITHUB_REF | cut -d '/' -f 2 | cut -d '.' -f 2)
-          branch_version="$major_version.$minor_version"
-          echo "branch_version: $branch_version"
-          echo "::set-env name=branch_version::$branch_version"
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v2
 
-    - name: Install jq
-      uses: actions/setup-node@v2
+
+    # Set up git
+    - name: Setup GIT
+      run: git config --global user.email "action@github.com" && git config --global user.name "GitHub Action"
+
+    - name: Optionally run npmrc
+      env:
+        PEPPERI_ADDON_INFRA_SDK_READ_ACCESS: ${{ secrets.PEPPERI_ADDON_INFRA_SDK_READ_ACCESS }}
+      if: "${{ env.PEPPERI_ADDON_INFRA_SDK_READ_ACCESS != '' }}"
+      run: echo -e "@pepperi-addons:registry=https://npm.pkg.github.com \n //npm.pkg.github.com/:_authToken=${{ env.PEPPERI_ADDON_INFRA_SDK_READ_ACCESS }}" >> ~/.npmrc
+
+    - name: cat ~/.npmrc
+      env:
+        PEPPERI_ADDON_INFRA_SDK_READ_ACCESS: ${{ secrets.PEPPERI_ADDON_INFRA_SDK_READ_ACCESS }}
+      if: "${{ env.PEPPERI_ADDON_INFRA_SDK_READ_ACCESS != '' }}"
+      run: cat ~/.npmrc
+
+    - uses: actions/setup-node@v2
       with:
-        node-version: '12.x'
-        package-manager: 'npm'
-        packages: 'jq'
-    - name: Extract majorVersion.minorVersion from version
-      run: |
-        json_version=$(jq -r '.Version' addon.config.json)
-        json_major_minor_version=$(echo $json_version | cut -d '.' -f 1-2)
-        echo "json_major_minor_version: $json_major_minor_version"
-        echo "::set-env name=json_major_minor_version::$json_major_minor_version"
-        
-    - name: Should update version in json?
-      run: |
-        should_update_json_version = "$json_major_minor_version" != "$branch_version"
-        echo "should_update_json_version: $should_update_json_version"
-        echo "::set-env name=should_update_json_version::$should_update_json_version"
-    - name: Update json version
-      if: ${{ env.should_update_json_version }}
-      run: |
-        jq --arg Version "$branch_version" '.Version=$branch_version | .0' addon.config.json
-        
-    - name: Commit and push changes
-      if: ${{ env.should_update_json_version }}
-      run: |
-        git add addon.config.json
-        git commit -m "Update version and build number in JSON file"
-        git push
-  
+        node-version: '14'
+    # Install node modules in projects
+    - name: Installation
+      run: npm run init
+    
+    # Install scripts in root folder
+    - name: Scripts installation
+      run: npm install
+
+    # build the addon files
+    - name: Build
+      run: npm run build
+
+    # check if build has changed
+    - name: Needs Publish
+      # run: echo "needs_publish=`git diff-index --quiet HEAD publish || echo 1`" >> $GITHUB_ENV
+      run: echo "needs_publish=`echo 1`" >> $GITHUB_ENV
+
+    # Check value
+    - name: Publish?
+      run: echo ${{ env.needs_publish }}
+
+    # Get Version
+    - name: Description
+      if: ${{ env.needs_publish == '1' }}
+      run: echo "version_description=`git log --oneline --format=%B | head -n 1 | sed s/\(#[0-9]*\)//g | sed s/-/\ /g`" >> $GITHUB_ENV 
+
+    # Publish addon version
+    - name: Publish
+      env:
+          PEPPERI_ADDON_PUBLISH_KEY: ${{ secrets.PEPPERI_ADDON_PUBLISH_KEY }}
+      if: ${{ env.needs_publish == '1' }}
+      run: npm run publish-addon -- -d "${{ env.version_description }}" -sk ${{ env.PEPPERI_ADDON_PUBLISH_KEY }}
+
+    # Commit changes
+    - name: Commit changes
+      if: ${{ env.needs_publish == '1' }}
+      run: git add . && git commit -m "version bump" && git push -f
+
+    # trigger jenkins by web requests, based on https://github.com/Satak/webrequest-action
+    # Jenkins JOB must be defined with Parameters
+    - name: Submit for QA - Addons Api Tests
+      env:
+          JENKINS_GITHUB_HOST: ${{ secrets.JENKINS_GITHUB_HOST }}
+          JENKINS_GITHUB_TOKEN: ${{ secrets.JENKINS_GITHUB_TOKEN }}
+          JENKINS_GITHUB_PASS: ${{ secrets.JENKINS_GITHUB_PASS }}
+          JENKINS_GITHUB_USER: ${{ secrets.JENKINS_GITHUB_USER }}
+          JENKINS_GITHUB_JOB: ${{ secrets.JENKINS_GITHUB_JOB }}
+      if: "${{ env.JENKINS_GITHUB_HOST != '' && env.JENKINS_GITHUB_JOB != '' && env.JENKINS_GITHUB_USER != '' && env.JENKINS_GITHUB_TOKEN != '' && env.JENKINS_GITHUB_PASS != '' }}"
+      uses: satak/webrequest-action@master
+      with:
+        url: ${{ env.JENKINS_GITHUB_HOST }}${{ env.JENKINS_GITHUB_JOB }}/buildWithParameters?token=${{ env.JENKINS_GITHUB_TOKEN }}&GitRepo=${{ github.repository }}
+        method: GET
+        username: ${{ env.JENKINS_GITHUB_USER }}
+        password: ${{ env.JENKINS_GITHUB_PASS }}
