@@ -43,7 +43,7 @@ jobs:
 
     - uses: actions/setup-node@v2
       with:
-        node-version: '14'
+        node-version: '16'
     # Install node modules in projects
     - name: Installation
       run: npm run init
