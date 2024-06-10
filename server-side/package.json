@@ -16,6 +16,7 @@
         "start": "tsc -w app.local.ts"
     },
     "devDependencies": {
+        "@pepperi-addons/ngx-composite-lib": "^0.4.2-beta.33",
         "@rollup/plugin-commonjs": "^12.0.0",
         "@rollup/plugin-json": "^4.1.0",
         "@rollup/plugin-node-resolve": "^8.0.0",
@@ -25,14 +26,11 @@
         "rollup": "^2.10.9",
         "rollup-plugin-typescript2": "^0.27.1",
         "ts-node": "^8.10.1",
-        "typescript": "~3.8.0",
-        "@pepperi-addons/ngx-composite-lib": "0.0.16-beta.1"
+        "typescript": "~3.8.0"
     },
     "dependencies": {
         "@pepperi-addons/debug-server": "0.0.30",
-        "@pepperi-addons/papi-sdk": "1.31.0",
-        "@pepperi-addons/ngx-composite-lib": "0.0.16-beta.1",
-        "@pepperi-addons/ngx-lib": "^0.3.15-beta.1",
+        "@pepperi-addons/papi-sdk": "^1.72.5",
         "uuid": "^8.3.2"
     }
 }

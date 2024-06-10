@@ -21,8 +21,8 @@ class TodosService {
         this.addonUUID = client.AddonUUID;
     }
     
-    getTodos(options) {
-        return this.papiClient.addons.data.uuid(this.addonUUID).table(TABLE_NAME).find(options);
+    async getTodos(options) {
+        return await this.papiClient.addons.data.uuid(this.addonUUID).table(TABLE_NAME).find(options);
     }
 
     getTodoByKey(options){
@@ -34,7 +34,7 @@ class TodosService {
         }
     }
 
-    upsertTodo(body: any) {
+    async upsertTodo(body: any) {
         //Handling a single todo as an array of size 1 will allow for a general processing.
         if(!Array.isArray(body)){
             body = [body];
@@ -46,7 +46,7 @@ class TodosService {
             }
         });
 
-        let promises: Array<Promise<any>> = new Array;
+        let promises: Array<Promise<any>> = []
         body.forEach(doc => {
             if(doc.DueDate === ""){
                 doc.DueDate = null;
@@ -60,27 +60,23 @@ class TodosService {
             }
         });
 
-        return Promise.all(promises)
-        .then(() => {return promises[0]})
-        .catch(rej => {
-            return rej;
-        });
+        return await Promise.all(promises);
     }
 
     async updateTodo(doc: any) {
         const doesKeyExist: boolean = (await this.papiClient.addons.data.uuid(this.addonUUID).table(TABLE_NAME).find(doc.Key)).length > 0;
 
         if(doesKeyExist){
-            return this.papiClient.addons.data.uuid(this.addonUUID).table(TABLE_NAME).upsert(doc);
+            return await this.papiClient.addons.data.uuid(this.addonUUID).table(TABLE_NAME).upsert(doc);
         }
         else{
             throw new Error(`Could not find item with key ${doc.Key}`);
         }
     }
 
-    insertTodo(doc: any) {
+    async insertTodo(doc: any) {
         doc.Key = uuid();
-        return this.papiClient.addons.data.uuid(this.addonUUID).table(TABLE_NAME).upsert(doc);
+        return await this.papiClient.addons.data.uuid(this.addonUUID).table(TABLE_NAME).upsert(doc);
     }
 }
 

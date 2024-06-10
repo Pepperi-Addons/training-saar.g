@@ -5,10 +5,10 @@ export async function todos(client: Client, request: Request) {
     const todosService = new TodosService(client)
     switch (request.method){
         case "GET": {
-            return todosService.getTodos(request.query);
+            return await todosService.getTodos(request.query);
         }
         case "POST": {
-            return todosService.upsertTodo(request.body);
+            return await todosService.upsertTodo(request.body);
         }
         default:{
             throw new Error(`Unsupported method: ${request.method}`);

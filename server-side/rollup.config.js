@@ -14,6 +14,7 @@ export default config.Endpoints.map(endpoint => {
          }
         ],
         external: [
+            "node-fetch",
         ],
         plugins: [
          typescript({
@@ -25,7 +26,9 @@ export default config.Endpoints.map(endpoint => {
              }
           }),
           resolve(),
-          commonjs(),
+          commonjs({
+            ignore: ["node-fetch"]
+          }),
           json()
         ]
        }

@@ -24,7 +24,7 @@ export async function install(client: Client, request: Request): Promise<any> {
 
     await papiClient.addons.data.schemes.post({
         Name: "Todos",
-        Type: "indexed_data",
+        Type: "data",
         Fields:{
             Name: {
                 Type: "String",
@@ -39,7 +39,7 @@ export async function install(client: Client, request: Request): Promise<any> {
             Completed: {
                 Type: "Bool"
             }
-        } as any
+        }
     });
     const fields1: any[] = [{
             FieldID: 'GeneralInformation',
