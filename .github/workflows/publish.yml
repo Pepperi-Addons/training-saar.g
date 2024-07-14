@@ -17,6 +17,7 @@ on:
       JENKINS_GITHUB_JOB:
       JENKINS_GITHUB_PASS:
       JENKINS_GITHUB_USER:
+      PEPPERI_NPMJS_PRIVATE_REPOS_READ_ACCESS:
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -31,15 +32,9 @@ jobs:
 
     - name: Optionally run npmrc
       env:
-        PEPPERI_ADDON_INFRA_SDK_READ_ACCESS: ${{ secrets.PEPPERI_ADDON_INFRA_SDK_READ_ACCESS }}
-      if: "${{ env.PEPPERI_ADDON_INFRA_SDK_READ_ACCESS != '' }}"
-      run: echo -e "@pepperi-addons:registry=https://npm.pkg.github.com \n //npm.pkg.github.com/:_authToken=${{ env.PEPPERI_ADDON_INFRA_SDK_READ_ACCESS }}" >> ~/.npmrc
-
-    - name: cat ~/.npmrc
-      env:
-        PEPPERI_ADDON_INFRA_SDK_READ_ACCESS: ${{ secrets.PEPPERI_ADDON_INFRA_SDK_READ_ACCESS }}
-      if: "${{ env.PEPPERI_ADDON_INFRA_SDK_READ_ACCESS != '' }}"
-      run: cat ~/.npmrc
+        PEPPERI_NPMJS_PRIVATE_REPOS_READ_ACCESS: ${{ secrets.PEPPERI_NPMJS_PRIVATE_REPOS_READ_ACCESS }}
+      if: "${{ env.PEPPERI_NPMJS_PRIVATE_REPOS_READ_ACCESS != '' }}"
+      run: echo "//registry.npmjs.org/:_authToken=${{ env.PEPPERI_NPMJS_PRIVATE_REPOS_READ_ACCESS }}" > ~/.npmrc
 
     - uses: actions/setup-node@v2
       with:
